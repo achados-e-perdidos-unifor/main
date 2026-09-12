@@ -1,3 +1,4 @@
+# pyrefly: ignore [missing-import]
 from flask import jsonify, request
 from Model.Database import executar_consulta, selecionar_dados
 

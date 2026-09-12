@@ -43,8 +43,8 @@
       const result = await response.json();  
 
       if (response.ok) {
-        
-        alert(`Sucesso: ${result.mensagem}`);
+        sessionStorage.setItem('mensagemSucesso', `Sucesso: ${result.mensagem}`);
+        window.location.href = '../index.html';
       } else {
 
         alert(`Erro: ${result.mensagem}`);

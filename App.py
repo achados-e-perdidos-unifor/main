@@ -1,12 +1,17 @@
+# pyrefly: ignore [missing-import]
 from flask import Flask
 from flask_cors import CORS
 from Controller.RotasObjetoP import criar_rotasP
 from Controller.RotasObjetoA import criar_rotasA
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='View', static_url_path='')
 CORS(app)
 criar_rotasP(app)
 criar_rotasA(app)
+
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
 
 
 if __name__ == "__main__":

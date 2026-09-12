@@ -29,17 +29,56 @@
       </div>
       <div class="form-group">
         <label for="data">Data Perdido</label>
-        <input type="text" class="form-control" id="data" name="data" required>
+        <input type="text" class="form-control" id="data" name="data" inputmode="numeric" maxlength="10"
+          placeholder="DD/MM/AAAA" required>
       </div>
       <button type="button" id="submit-btn" class="btn btn-success mt-3">Cadastrar</button>
     </form>
   </main>
   
   <script>
+    const campoData = document.getElementById("data");
+
+    campoData.addEventListener("input", () => {
+      const numeros = campoData.value.replace(/\D/g, "").slice(0, 8);
+      const partes = [];
+
+      if (numeros.length > 0) partes.push(numeros.slice(0, 2));
+      if (numeros.length > 2) partes.push(numeros.slice(2, 4));
+      if (numeros.length > 4) partes.push(numeros.slice(4, 8));
+
+      campoData.value = partes.join("/");
+    });
+
+    function dataPerdidaValida(valor) {
+      const correspondencia = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(valor);
+
+      if (!correspondencia) return false;
+
+      const dia = Number(correspondencia[1]);
+      const mes = Number(correspondencia[2]);
+      const ano = Number(correspondencia[3]);
+      const dataInformada = new Date(ano, mes - 1, dia);
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+
+      const dataExiste = dataInformada.getFullYear() === ano
+        && dataInformada.getMonth() === mes - 1
+        && dataInformada.getDate() === dia;
+
+      return dataExiste && dataInformada <= hoje;
+    }
+
     document.getElementById("submit-btn").addEventListener("click", async () => {
       const nome = document.getElementById("nome").value;
       const cor = document.getElementById("cor").value;
       const data = document.getElementById("data").value;
+
+      if (!dataPerdidaValida(data)) {
+        alert("Informe uma data válida, igual ou anterior ao dia de hoje.");
+        campoData.focus();
+        return;
+      }
   
       const response = await fetch("http://localhost:5000/inserir_objeto", {
         method: "POST",
@@ -54,7 +93,13 @@
       });
   
       const result = await response.json();
-      alert(result.mensagem);
+
+      if (response.ok) {
+        sessionStorage.setItem('mensagemSucesso', result.mensagem);
+        window.location.href = '../index.html';
+      } else {
+        alert(result.mensagem);
+      }
     });
   </script>
 

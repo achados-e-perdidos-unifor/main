@@ -60,7 +60,13 @@
       });
 
       const result = await response.json();
-      alert(result.mensagem);
+
+      if (response.ok) {
+        sessionStorage.setItem('mensagemSucesso', result.mensagem);
+        window.location.href = '../index.html';
+      } else {
+        alert(result.mensagem);
+      }
     });
   </script>
 

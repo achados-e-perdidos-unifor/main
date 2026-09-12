@@ -90,10 +90,11 @@
 
       const resultado = await response.json();  
 
-      alert(resultado.mensagem);
-      
       if (response.ok) {
-        document.getElementById('formAtualizar').reset();
+        sessionStorage.setItem('mensagemSucesso', resultado.mensagem);
+        window.location.href = '../index.html';
+      } else {
+        alert(resultado.mensagem);
       }
 
     } catch (error) {

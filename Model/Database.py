@@ -1,14 +1,18 @@
+import os
 import psycopg2 as pg
 from psycopg2.extras import DictCursor
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def conectar_BD():
     try:
         conn = pg.connect(
-            dbname="ProjetoBD",
-            user="postgres",
-            password="senha123",
-            host="localhost",
-            port="5432"
+            dbname=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT")
         )
         return conn
     except (Exception, pg.Error) as error:
