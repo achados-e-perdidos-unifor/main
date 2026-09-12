@@ -57,7 +57,7 @@ git clone <url-do-repo> && cd main && python3 -m venv venv && source venv/bin/ac
 **2. Instalar as dependências**
 
 ```bash
-pip install flask flask-cors psycopg2-binary python-dotenv
+pip install -r requirements.txt
 ```
 
 **3. Configurar o banco**

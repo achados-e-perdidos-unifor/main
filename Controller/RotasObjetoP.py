@@ -1,5 +1,20 @@
+from datetime import date, datetime
+import re
+
 from flask import jsonify, request
 from Model.Database import executar_consulta, selecionar_dados
+
+
+def data_perdido_valida(valor):
+    if not isinstance(valor, str) or not re.fullmatch(r'\d{2}/\d{2}/\d{4}', valor):
+        return False
+
+    try:
+        data_informada = datetime.strptime(valor, '%d/%m/%Y').date()
+    except ValueError:
+        return False
+
+    return data_informada <= date.today()
 
 
 def criar_rotasP(app):
@@ -28,6 +43,10 @@ def criar_rotasP(app):
 
         if not nome_objeto or not cor or not data_perdido:
             return jsonify({'mensagem': 'Dados incompletos'}), 400
+
+        if not data_perdido_valida(data_perdido):
+            return jsonify({'mensagem': 'Informe uma data válida, igual ou anterior ao dia de hoje'}), 400
+
         query = """
         INSERT INTO objetos_perdidos (nome_objeto, cor, data_perdido)
         VALUES (%s, %s, %s)
@@ -50,8 +69,11 @@ def criar_rotasP(app):
         cor = dados.get('cor')
         data_perdido = dados.get('data_perdido')
 
-        if not id_objeto:
-            return jsonify({'mensagem': 'ID do objeto não fornecido'}), 400
+        if not id_objeto or not nome_objeto or not cor or not data_perdido:
+            return jsonify({'mensagem': 'Todos os campos são obrigatórios'}), 400
+
+        if not data_perdido_valida(data_perdido):
+            return jsonify({'mensagem': 'Informe uma data válida, igual ou anterior ao dia de hoje'}), 400
 
         query = """
         UPDATE objetos_perdidos
@@ -63,10 +85,13 @@ def criar_rotasP(app):
 
         resultado = executar_consulta(query, params)
 
-        if resultado:
-            return jsonify({'mensagem': 'Objeto atualizado com sucesso'})
-        else:
+        if resultado is None:
             return jsonify({'mensagem': 'Erro ao atualizar o objeto'}), 500
+
+        if resultado.rowcount == 0:
+            return jsonify({'mensagem': 'Objeto não encontrado'}), 404
+
+        return jsonify({'mensagem': 'Objeto atualizado com sucesso'})
 
     @app.route('/deletar_objeto/<int:id_objeto>', methods=['DELETE'])
     def deletar_objeto(id_objeto):
@@ -80,12 +105,15 @@ def criar_rotasP(app):
         try:
             resultado = executar_consulta(query, params)
 
-            if resultado:
+            if resultado is None:
+                return jsonify({'mensagem': 'Erro ao deletar o objeto'}), 500
+
+            if resultado.rowcount > 0:
                 print(f"Objeto com ID {id_objeto} deletado com sucesso.")
                 return jsonify({'mensagem': 'Objeto deletado com sucesso'})
             else:
                 print(f"Falha ao deletar o objeto com ID {id_objeto}. Nenhuma linha foi afetada.")
-                return jsonify({'mensagem': 'Erro ao deletar o objeto'}), 500
+                return jsonify({'mensagem': 'Objeto não encontrado'}), 404
         except Exception as e:
             print(f"Erro ao realizar a consulta: {e}")
             return jsonify({'mensagem': 'Erro ao deletar o objeto'}), 500
