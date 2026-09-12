@@ -82,10 +82,13 @@ def criar_rotasA(app):
 
         resultado = executar_consulta(query, params)
 
-        if resultado:
-            return jsonify({'mensagem': 'Objeto atualizado com sucesso!'})
-        else:
+        if resultado is None:
             return jsonify({'mensagem': 'Erro ao atualizar o objeto'}), 500
+
+        if resultado.rowcount == 0:
+            return jsonify({'mensagem': 'Objeto não encontrado'}), 404
+
+        return jsonify({'mensagem': 'Objeto atualizado com sucesso!'})
 
     @app.route('/deletar_objetoA/<int:id_objetoA>', methods=['DELETE'])
     def deletar_objetoA(id_objetoA):
@@ -126,8 +129,8 @@ def criar_rotasA(app):
                 objetos_achados.append(objeto)
 
             return jsonify(objetos_achados)
-        else:
-            return jsonify({"mensagem": "Nenhum objeto encontrado"}), 404
+
+        return jsonify([])
 
     @app.route('/listar_objetoA/<int:id_objetoA>', methods=['GET'])
     def listar_objetoA(id_objetoA):
