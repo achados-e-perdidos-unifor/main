@@ -1,11 +1,6 @@
-# ==========================================
-# Docker Compose - Achados e Perdidos Unifor
-# ==========================================
-
 services:
   app:
     build: .
-  
     ports:
       - "5000:5000"
     environment:
@@ -26,7 +21,6 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - db_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s

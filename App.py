@@ -4,9 +4,11 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from Controller.RotasObjetoP import criar_rotasP
 from Controller.RotasObjetoA import criar_rotasA
+from Model.Database import inicializar_banco
 
 app = Flask(__name__, static_folder='View', static_url_path='')
 CORS(app)
+inicializar_banco()
 criar_rotasP(app)
 criar_rotasA(app)
 
