@@ -1,0 +1,45 @@
+# ==========================================
+# .dockerignore
+# 
+# ==========================================
+
+# Controle de versão
+.git
+.gitignore
+
+# Ambientes virtuais locais
+.venv
+venv
+env
+
+# Caches e arquivos compilados Python
+__pycache__
+*.py[cod]
+*$py.class
+.pytest_cache
+
+# Variáveis de ambiente e segredos (NUNCA incluir na imagem!)
+.env
+.env.*
+!.env.example
+
+# Arquivos de teste e linters (não necessários no container de produção)
+tests/
+requirements-dev.txt
+.flake8
+
+# Workflows do GitHub
+.github/
+
+# Arquivos de orquestração Docker e scripts de banco
+Dockerfile
+docker-compose*.yml
+init.sql
+.dockerignore
+
+# Documentação e artefatos temporários
+README.md
+artifacts/
+*.zip
+*.tar
+*.log

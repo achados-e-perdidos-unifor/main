@@ -60,3 +60,26 @@ def selecionar_dados(query, params=None):
             conn.close()
     else:
         return []
+
+
+def inicializar_banco():
+    query_perdidos = """
+    CREATE TABLE IF NOT EXISTS objetos_perdidos (
+        id_objeto SERIAL PRIMARY KEY,
+        nome_objeto VARCHAR(255) NOT NULL,
+        cor VARCHAR(100) NOT NULL,
+        data_perdido VARCHAR(50) NOT NULL
+    );
+    """
+    query_achados = """
+    CREATE TABLE IF NOT EXISTS objetos_achados (
+        id_objetoA SERIAL PRIMARY KEY,
+        nome_objeto_achado VARCHAR(255) NOT NULL,
+        cor_achado VARCHAR(100) NOT NULL,
+        nome_pessoa VARCHAR(255) NOT NULL,
+        cpf VARCHAR(14) NOT NULL,
+        contato VARCHAR(200) NOT NULL
+    );
+    """
+    executar_consulta(query_perdidos)
+    executar_consulta(query_achados)
