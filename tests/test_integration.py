@@ -4,13 +4,7 @@ These tests run against a live Flask application + PostgreSQL database
 (via docker-compose) and validate end-to-end functionality.
 """
 
-import pytest
 from datetime import date, timedelta
-
-
-def get_test_date():
-    """Get a valid date (today or in the past) for testing."""
-    return (date.today() - timedelta(days=1)).strftime("%d/%m/%Y")
 
 
 class TestHealth:

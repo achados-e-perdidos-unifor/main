@@ -2,9 +2,10 @@
 
 import os
 import sys
+from time import sleep
+
 import pytest
 import requests
-from time import sleep
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
