@@ -4,7 +4,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from Controller.RotasObjetoP import criar_rotasP
 from Controller.RotasObjetoA import criar_rotasA
-from Model.Database import inicializar_banco
+from Model.Database import inicializar_banco, verificar_conexao_BD
 
 app = Flask(__name__, static_folder='View', static_url_path='')
 CORS(app)
@@ -20,7 +20,14 @@ def index():
 
 @app.route('/health')
 def health():
-    return jsonify({'status': 'healthy'}), 200
+    db_conectado = verificar_conexao_BD()
+    status_db = "connected" if db_conectado else "disconnected"
+    codigo_http = 200 if db_conectado else 503
+
+    return jsonify({
+        'status': 'healthy' if db_conectado else 'unhealthy',
+        'database': status_db
+    }), codigo_http
 
 
 if __name__ == "__main__":

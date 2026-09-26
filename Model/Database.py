@@ -84,4 +84,16 @@ def inicializar_banco():
     );
     """
     executar_consulta(query_perdidos)
-    executar_consulta(query_achados)
+    executar_consulta(query_achados)
+
+
+def verificar_conexao_BD():
+    conn = conectar_BD()
+    if conn:
+        try:
+            conn.close()
+            return True
+        except (Exception, pg.Error):
+            return False
+    return False
+
