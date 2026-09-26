@@ -67,7 +67,7 @@ class TestObjetosPerdidos:
         response = http_client.get(f"/listar_objeto/{obj_id}")
         assert response.status_code == 200
         data = response.json()
-        assert data[0]["nome_objeto"] == "Relógio"
+        assert data["Objeto-perdido"]["nome_objeto"] == "Relógio"
 
     def test_update_objeto_perdido(self, http_client, clean_database):
         """Should update a lost object."""
@@ -91,7 +91,7 @@ class TestObjetosPerdidos:
         assert response.status_code == 200
 
         verify_response = http_client.get(f"/listar_objeto/{obj_id}")
-        assert verify_response.json()[0]["nome_objeto"] == "Mochila preta (grande)"
+        assert verify_response.json()["Objeto-perdido"]["nome_objeto"] == "Mochila preta (grande)"
 
     def test_delete_objeto_perdido(self, http_client, clean_database):
         """Should delete a lost object."""
