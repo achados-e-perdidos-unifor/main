@@ -8,9 +8,13 @@ on:
     branches: [ main, develop ]
   workflow_dispatch:
 
+defaults:
+  run:
+    shell: powershell
+
 jobs:
   build:
-    runs-on: archlinux
+    runs-on: windows_local
 
     steps:
       - name: Checkout código
@@ -24,6 +28,7 @@ jobs:
       - name: Instalar pip e dependências
         run: |
           python -m pip install --upgrade pip
+          if ($LASTEXITCODE -ne 0) { throw "Failed to update pip" }
           pip install -r requirements.txt
 
       - name: Verificar imports do projeto
@@ -32,8 +37,10 @@ jobs:
 
       - name: Gerar artefato ZIP
         run: |
-          mkdir -p artifacts
-          zip -r artifacts/build-${{ github.run_number }}.zip . -x "*.git*" "__pycache__/*" ".venv/*" "venv/*" "*.pyc" ".pytest_cache/*"
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          $artifactPath = "artifacts/build-${{ github.run_number }}.zip"
+          git archive --format=zip --output $artifactPath HEAD
+          if ($LASTEXITCODE -ne 0) { throw "Failed to create ZIP artifact" }
 
       - name: Upload artefato
         uses: actions/upload-artifact@v4
@@ -43,7 +50,7 @@ jobs:
           retention-days: 30
 
   lint:
-    runs-on: archlinux
+    runs-on: windows_local
     needs: build
 
     steps:
@@ -65,7 +72,7 @@ jobs:
           flake8 . --count --show-source --statistics
 
   test:
-    runs-on: archlinux
+    runs-on: windows_local
     needs: lint
 
     steps:
@@ -92,10 +99,32 @@ jobs:
 
       - name: Validar container com Docker Compose (Smoke Test em /health)
         run: |
-          docker compose up -d
-          sleep 8
-          curl -f http://localhost:5000/health || (docker compose logs && exit 1)
-          docker compose down -v
+          $ErrorActionPreference = "Stop"
+          try {
+            docker compose up -d
+            if ($LASTEXITCODE -ne 0) { throw "Failed to start Docker Compose services" }
+
+            $deadline = (Get-Date).AddSeconds(60)
+            $response = $null
+            while ((Get-Date) -lt $deadline) {
+              try {
+                $response = Invoke-WebRequest -Uri "http://localhost:5000/health" -UseBasicParsing -TimeoutSec 5
+                if ($response.StatusCode -eq 200) { break }
+              }
+              catch {
+                Start-Sleep -Seconds 2
+              }
+            }
+
+            if ($null -eq $response -or $response.StatusCode -ne 200) {
+              docker compose logs
+              throw "The app did not return HTTP 200 from /health"
+            }
+          }
+          finally {
+            docker compose down -v
+            if ($LASTEXITCODE -ne 0) { Write-Warning "Failed to clean up Docker Compose services" }
+          }
 
       - name: Salvar imagem Docker
         run: |
@@ -110,7 +139,7 @@ jobs:
 
 
   deploy:
-    runs-on: archlinux
+    runs-on: windows_local
     needs: test
 
     if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || startsWith(github.ref, 'refs/tags/v')
@@ -132,12 +161,26 @@ jobs:
 
       - name: Tag e push da imagem
         run: |
-          docker tag app:${{ github.sha }} murilo751/achados-e-perdidos:${{ github.sha }}
-          docker tag app:${{ github.sha }} murilo751/achados-e-perdidos:latest
-          docker push murilo751/achados-e-perdidos:${{ github.sha }}
-          docker push murilo751/achados-e-perdidos:latest
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            VERSION="${GITHUB_REF#refs/tags/}"
-            docker tag app:${{ github.sha }} murilo751/achados-e-perdidos:${VERSION}
-            docker push murilo751/achados-e-perdidos:${VERSION}
-          fi
+          $sourceImage = "app:${{ github.sha }}"
+          $repository = "murilo751/achados-e-perdidos"
+          $shaImage = "${repository}:${{ github.sha }}"
+          $latestImage = "${repository}:latest"
+
+          docker tag $sourceImage $shaImage
+          if ($LASTEXITCODE -ne 0) { throw "Failed to create SHA tag" }
+          docker tag $sourceImage $latestImage
+          if ($LASTEXITCODE -ne 0) { throw "Failed to create latest tag" }
+
+          docker push $shaImage
+          if ($LASTEXITCODE -ne 0) { throw "Failed to push SHA tag" }
+          docker push $latestImage
+          if ($LASTEXITCODE -ne 0) { throw "Failed to push latest tag" }
+
+          if ($env:GITHUB_REF -like "refs/tags/*") {
+            $version = $env:GITHUB_REF.Substring("refs/tags/".Length)
+            $versionImage = "${repository}:${version}"
+            docker tag $sourceImage $versionImage
+            if ($LASTEXITCODE -ne 0) { throw "Failed to create release tag" }
+            docker push $versionImage
+            if ($LASTEXITCODE -ne 0) { throw "Failed to push release tag" }
+          }
