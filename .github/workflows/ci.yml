@@ -1,8 +1,9 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
     branches: [ main, feature/*, develop ]
+    tags: [ 'v*.*.*' ]
   pull_request:
     branches: [ main, develop ]
   workflow_dispatch:
@@ -59,10 +60,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
-      - name: Executar flake8
+      - name: Executar flake8 (sem tolerância a mascaramento de falhas)
         run: |
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          flake8 . --count --show-source --statistics
 
   test:
     runs-on: archlinux
@@ -82,7 +82,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
-      - name: Executar testes mocados
+      - name: Executar testes automatizados
         run: |
           python -m pytest tests/ -v --tb=short
 
@@ -90,11 +90,18 @@ jobs:
         run: |
           docker build -t app:${{ github.sha }} .
 
+      - name: Validar container com Docker Compose (Smoke Test em /health)
+        run: |
+          docker compose up -d
+          sleep 8
+          curl -f http://localhost:5000/health || (docker compose logs && exit 1)
+          docker compose down -v
+
       - name: Salvar imagem Docker
         run: |
           docker save app:${{ github.sha }} -o image.tar
 
-      - name: Upload da imagem Docker
+      - name: Upload da imagem Docker como artefato
         uses: actions/upload-artifact@v4
         with:
           name: docker-image
@@ -106,7 +113,7 @@ jobs:
     runs-on: archlinux
     needs: test
 
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || startsWith(github.ref, 'refs/tags/v')
 
     steps:
       - name: Download da imagem Docker
@@ -129,3 +136,8 @@ jobs:
           docker tag app:${{ github.sha }} murilo751/achados-e-perdidos:latest
           docker push murilo751/achados-e-perdidos:${{ github.sha }}
           docker push murilo751/achados-e-perdidos:latest
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/}"
+            docker tag app:${{ github.sha }} murilo751/achados-e-perdidos:${VERSION}
+            docker push murilo751/achados-e-perdidos:${VERSION}
+          fi

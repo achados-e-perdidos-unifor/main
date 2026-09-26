@@ -52,14 +52,13 @@ def criar_rotasP(app):
         VALUES (%s, %s, %s)
         """
 
-        params = (nome_objeto,  cor, data_perdido)
+        params = (nome_objeto, cor, data_perdido)
 
         resultado = executar_consulta(query, params)
         if resultado:
             return jsonify({'mensagem': 'Objeto inserido com sucesso'})
         else:
             return jsonify({'mensagem': 'Erro ao inserir o objeto'}), 500
-
 
     @app.route('/atualizar_objeto', methods=['PUT'])
     def atualizar_objeto():
