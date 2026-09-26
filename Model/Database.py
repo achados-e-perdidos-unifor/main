@@ -83,8 +83,17 @@ def inicializar_banco():
         contato VARCHAR(200) NOT NULL
     );
     """
+    query_tribunal = """
+    CREATE TABLE IF NOT EXISTS tribunal_devops (
+        id SERIAL PRIMARY KEY,
+        integrante VARCHAR(100) NOT NULL,
+        crime VARCHAR(255) NOT NULL,
+        data_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    """
     executar_consulta(query_perdidos)
     executar_consulta(query_achados)
+    executar_consulta(query_tribunal)
 
 
 def verificar_conexao_BD():
@@ -96,4 +105,25 @@ def verificar_conexao_BD():
         except (Exception, pg.Error):
             return False
     return False
+
+
+def registrar_crime_bd(integrante, crime):
+    query = "INSERT INTO tribunal_devops (integrante, crime) VALUES (%s, %s)"
+    return executar_consulta(query, (integrante, crime))
+
+
+def obter_placar_crimes():
+    query = """
+    SELECT integrante, COUNT(*) as total_crimes, MAX(crime) as ultimo_crime
+    FROM tribunal_devops
+    GROUP BY integrante
+    ORDER BY total_crimes DESC, integrante ASC
+    """
+    return selecionar_dados(query)
+
+
+def zerar_crimes_bd():
+    query = "DELETE FROM tribunal_devops"
+    return executar_consulta(query)
+
 

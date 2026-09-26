@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎪 RODA A RODA DOS CONDENADOS DA TI 🎪</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Comic+Neue:wght@700&family=Impact&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --amarelo-chacrinha: #ffea00;
+            --vermelho-alerta: #ff0033;
+            --azul-tosco: #00d4ff;
+            --verde-lima: #76ff03;
+            --fundo-retro: #140420;
+        }
+
+        body {
+            background-color: var(--fundo-retro);
+            background-image: 
+                radial-gradient(circle at 50% 20%, rgba(255, 234, 0, 0.2) 0%, transparent 70%),
+                repeating-conic-gradient(from 0deg, #1c002c 0deg 15deg, #10001a 15deg 30deg);
+            color: #ffffff;
+            font-family: 'Comic Neue', cursive, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Letreiro Piscante Topo */
+        .marquee-container {
+            background: linear-gradient(90deg, #ff0055, #ffcc00, #00ffcc, #ff0055);
+            background-size: 300% 300%;
+            animation: gradientAnim 2.5s ease infinite;
+            padding: 10px;
+            border-bottom: 5px solid #fff;
+            box-shadow: 0 4px 25px rgba(255, 0, 85, 0.8);
+            text-align: center;
+        }
+
+        @keyframes gradientAnim {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .marquee-text {
+            font-family: 'Bungee', cursive;
+            font-size: 1.4rem;
+            color: #000;
+            text-shadow: 2px 2px 0px #fff;
+            letter-spacing: 2px;
+            margin: 0;
+        }
+
+        .show-header {
+            text-align: center;
+            margin: 20px 0 15px;
+        }
+
+        .show-title {
+            font-family: 'Bungee', cursive;
+            font-size: clamp(2.2rem, 5.5vw, 3.4rem);
+            color: var(--amarelo-chacrinha);
+            text-shadow: 4px 4px 0px #ff0033, 8px 8px 0px #000;
+            letter-spacing: 2px;
+            line-height: 1.1;
+        }
+
+        .show-subtitle {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.7);
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 30px;
+            border: 3px dashed var(--azul-tosco);
+            margin-top: 10px;
+        }
+
+        /* Cartão do B.O. (Delito) */
+        .bo-card {
+            background: #fffbe0;
+            color: #111;
+            border: 4px solid #000;
+            border-radius: 12px;
+            box-shadow: 8px 8px 0px #000;
+            padding: 16px 22px;
+            max-width: 780px;
+            margin: 0 auto 25px;
+            transform: rotate(-0.5deg);
+        }
+
+        .bo-stamp {
+            display: inline-block;
+            background: var(--vermelho-alerta);
+            color: #fff;
+            font-family: 'Impact', sans-serif;
+            font-size: 1.1rem;
+            padding: 3px 12px;
+            transform: rotate(-3deg);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .bo-text {
+            font-size: 1.55rem;
+            font-weight: 800;
+            line-height: 1.3;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+        }
+
+        .btn-mudar-bo {
+            background: #ff5722;
+            color: white;
+            font-weight: bold;
+            border: 2px solid #000;
+            box-shadow: 3px 3px 0px #000;
+            border-radius: 8px;
+            padding: 7px 18px;
+            font-size: 1rem;
+            transition: all 0.1s;
+        }
+        .btn-mudar-bo:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0px #000;
+            background: #f4511e;
+            color: white;
+        }
+        .btn-mudar-bo:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #000;
+        }
+
+        /* ÁREA DA ROLETA GIGANTE */
+        .roleta-box {
+            position: relative;
+            width: 580px;
+            height: 580px;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 620px) {
+            .roleta-box {
+                width: 360px;
+                height: 360px;
+            }
+        }
+
+        /* Moldura Externa com Lâmpadas Piscantes */
+        .roleta-outer-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffe066 0%, #d4af37 60%, #8c6d1f 100%);
+            border: 14px dotted #ffffff;
+            box-shadow: 0 0 45px rgba(255, 234, 0, 0.8), inset 0 0 25px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: piscaLuzes 0.6s infinite alternate;
+        }
+
+        @keyframes piscaLuzes {
+            0% { border-color: #ff0055; box-shadow: 0 0 35px #ff0055; }
+            100% { border-color: #ffea00; box-shadow: 0 0 55px #ffea00; }
+        }
+
+        #wheelCanvas {
+            border-radius: 50%;
+            box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+            width: 90%;
+            height: 90%;
+        }
+
+        /* Ponteiro Físico (A Seta do Silvio Santos) */
+        .ponteiro-container {
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            pointer-events: none;
+            filter: drop-shadow(0 6px 10px rgba(0,0,0,0.8));
+        }
+
+        .ponteiro-seta {
+            width: 0;
+            height: 0;
+            border-left: 26px solid transparent;
+            border-right: 26px solid transparent;
+            border-top: 56px solid #ff0000;
+            position: relative;
+            transform-origin: 50% 10px;
+            transition: transform 0.05s ease-out;
+        }
+
+        .ponteiro-seta::after {
+            content: '';
+            position: absolute;
+            top: -56px;
+            left: -15px;
+            width: 30px;
+            height: 30px;
+            background: #ffea00;
+            border-radius: 50%;
+            border: 4px solid #000;
+        }
+
+        .ponteiro-seta.flicking {
+            transform: rotate(-24deg);
+        }
+
+        /* Botão Central de Girar */
+        .btn-girar-hub {
+            position: absolute;
+            width: 95px;
+            height: 95px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ff0055 0%, #aa0022 100%);
+            border: 5px solid #ffffff;
+            color: #ffffff;
+            font-family: 'Bungee', cursive;
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.8), inset 0 2px 6px rgba(255,255,255,0.8);
+            cursor: pointer;
+            z-index: 50;
+            user-select: none;
+            transition: all 0.15s;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        .btn-girar-hub:hover {
+            transform: scale(1.1);
+            background: radial-gradient(circle, #ff3377 0%, #cc0033 100%);
+            box-shadow: 0 0 35px #ff0055;
+        }
+
+        .btn-girar-hub:active {
+            transform: scale(0.95);
+        }
+
+        .btn-girar-hub:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* MODAL / BANNER DE CONDENAÇÃO DRAMÁTICO */
+        #veredictoBox {
+            display: none;
+            animation: zoomBomb 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            background: #fff;
+            color: #000;
+            border: 6px solid #ff0033;
+            border-radius: 16px;
+            box-shadow: 12px 12px 0px #000;
+            padding: 26px;
+            max-width: 680px;
+            margin: 20px auto 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        @keyframes zoomBomb {
+            0% { transform: scale(0.3) rotate(-8deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .stamp-culpado {
+            position: absolute;
+            top: -20px;
+            right: 15px;
+            background: #ff0000;
+            color: #fff;
+            font-family: 'Impact', sans-serif;
+            font-size: 2.5rem;
+            padding: 4px 22px;
+            border: 4px solid #fff;
+            box-shadow: 5px 5px 0px #000;
+            transform: rotate(14deg);
+            animation: carimboBate 0.5s ease;
+        }
+
+        @keyframes carimboBate {
+            0% { transform: scale(3) rotate(35deg); opacity: 0; }
+            70% { transform: scale(0.9) rotate(10deg); opacity: 1; }
+            100% { transform: scale(1) rotate(14deg); }
+        }
+
+        /* Foto do Condenado GIGANTE */
+        .foto-condenado {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 6px solid #000;
+            object-fit: cover;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            margin: 14px auto;
+        }
+
+        /* FICHA POLICIAL (LEADERBOARD) */
+        .ficha-policial {
+            background: #f4edd4;
+            color: #222;
+            border: 5px solid #332211;
+            border-radius: 14px;
+            box-shadow: 10px 10px 0px #000;
+            padding: 24px;
+            max-width: 880px;
+            margin: 30px auto 60px;
+        }
+
+        .ficha-header {
+            border-bottom: 3px double #332211;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .ficha-titulo {
+            font-family: 'Impact', sans-serif;
+            font-size: 2.2rem;
+            letter-spacing: 2px;
+            color: #8b0000;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .ficha-tabela th {
+            background-color: #332211;
+            color: #ffea00;
+            font-family: 'Impact', sans-serif;
+            letter-spacing: 1px;
+            font-size: 1.15rem;
+            border: 2px solid #221100;
+        }
+
+        .ficha-tabela td {
+            background-color: #fffdec;
+            border: 1px solid #c2b694;
+            vertical-align: middle;
+            font-weight: bold;
+            font-size: 1.05rem;
+        }
+
+        .badge-delitos {
+            background: #8b0000;
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 1.05rem;
+            font-family: 'Impact', sans-serif;
+        }
+
+        .link-fuga {
+            color: var(--amarelo-chacrinha);
+            text-decoration: underline;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-size: 1.15rem;
+        }
+        .link-fuga:hover {
+            color: #fff;
+        }
+    </style>
+</head>
+<body class="py-2">
+
+    <!-- Letreiro Piscante Topo -->
+    <div class="marquee-container">
+        <p class="marquee-text">
+            🚨 ATENÇÃO: AUDITORIA SURPRESA DEVOPS! VACILOU, GIROU, CONDENOU! 🚨
+        </p>
+    </div>
+
+    <div class="container text-center mt-3">
+        <a href="/" class="link-fuga">← Voltar ao Sistema Sério de Achados e Perdidos</a>
+
+        <!-- Header do Show -->
+        <div class="show-header">
+            <h1 class="show-title">🎪 RODA A RODA DOS CONDENADOS 🎪</h1>
+            <div class="show-subtitle">
+                O Tribunal Mais justo da DevOps • 100% Preciso e 100% Persistido no PostgreSQL! 💾
+            </div>
+        </div>
+
+        <!-- Cartão do B.O. (Crime) -->
+        <div class="bo-card">
+            <span class="bo-stamp">BOLETIM DE OCORRÊNCIA Nº 171</span>
+            <div id="boTexto" class="bo-text">
+                "Quem tá estudando introdução de objetos em C#? 🤫"
+            </div>
+            <div class="mt-2">
+                <button class="btn-mudar-bo" onclick="sortearNovoBo()">
+                    🎲 Sortear Novo Delito
+                </button>
+            </div>
+        </div>
+
+        <!-- A ROLETA GIGANTE -->
+        <div class="roleta-box">
+            <!-- Seta do Silvio Santos -->
+            <div class="ponteiro-container">
+                <div class="ponteiro-seta" id="ponteiroFisico"></div>
+            </div>
+
+            <!-- Moldura Externa com Luzes de Cassino -->
+            <div class="roleta-outer-ring">
+                <canvas id="wheelCanvas" width="560" height="560"></canvas>
+            </div>
+
+            <!-- Botão Central -->
+            <button id="btnGirarCentro" class="btn-girar-hub" onclick="acionarRoleta()">
+                GIRAR!
+            </button>
+        </div>
+
+        <!-- BANNER DE CONDENAÇÃO (VEREDICTO SEM PENA) -->
+        <div id="veredictoBox">
+            <div class="stamp-culpado">CULPADO!</div>
+            <h2 class="fw-bold text-danger mb-1" id="tituloCondenado">🚨 RÉU CONDENADO!</h2>
+            <img id="fotoCondenado" src="" alt="Culpado" class="foto-condenado">
+            <h3 class="fw-bold text-dark mt-2" id="nomeCondenado">Nome</h3>
+            <p class="fs-5 text-muted mb-2" id="delitoCondenado">Flagrado no delito: ...</p>
+            <small class="text-success fw-bold d-block mt-2">
+                💾 Crime fichado e persistido no PostgreSQL!
+            </small>
+            <button class="btn btn-dark btn-sm mt-3 fw-bold px-4 py-2" onclick="fecharVeredicto()">
+                Fechar e Girar de Novo
+            </button>
+        </div>
+
+        <!-- FICHA POLICIAL DOS VACILÕES (LEADERBOARD) -->
+        <div class="ficha-policial text-start">
+            <div class="ficha-header">
+                <h3 class="ficha-titulo">📋 FICHA POLICIAL DOS SUSPEITOS</h3>
+                <small class="text-muted fw-bold">Dados oficiais sincronizados em tempo real com o PostgreSQL</small>
+            </div>
+            <div class="table-responsive">
+                <table class="table ficha-tabela table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 70px;">RANK</th>
+                            <th>SUSPEITO</th>
+                            <th class="text-center" style="width: 160px;">B.O.s ACUMULADOS</th>
+                            <th>ÚLTIMO DELITO REGISTRADO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fichaTbody">
+                        <tr>
+                            <td colspan="4" class="text-center py-3">Carregando antecedentes criminais...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <button class="btn btn-outline-danger btn-sm fw-bold" onclick="zerarFichaPolicial()">
+                    🧹 Limpar Ficha (Habeas Corpus)
+                </button>
+                <button id="btnAtualizarFicha" class="btn btn-dark btn-sm fw-bold px-3" onclick="carregarFichaPolicial()">
+                    🔄 Atualizar Antecedentes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT DA ROLETA LITERAL E SONS CÔMICOS -->
+    <script>
+        // Membros e Fotos
+        const membros = [
+            { nome: "Alan", imgUrl: "/image/alan.jpg", cor: "#ff0055" },
+            { nome: "Murilo", imgUrl: "/image/murilo.jpg", cor: "#00b0ff" },
+            { nome: "Levi", imgUrl: "/image/levi.jpg", cor: "#ffea00" },
+            { nome: "Helder", imgUrl: "/image/helder.jpg", cor: "#00e676" },
+            { nome: "Evaldo", imgUrl: "/image/evaldo.jpg", cor: "#ff7700" }
+        ];
+
+        // Lista de Crimes Cabulosos
+        const crimes = [
+            "Quem ganha dinheiro com C# escondido? 🤫",
+            "Quem commita direto na main na sexta-feira às 17h59? 💣",
+            "Quem dá git push origin main --force com mensagem 'paz ✌️'? 🕊️",
+            "Quem resolve conflito apagando a pasta e clonando do zero? 📁🔥",
+            "Quem apaga os testes que falharam só pro pipeline ficar verdinho? 🟢🤫",
+            "Quem quebrou o build e foi almoçar sem avisar ninguém no grupo? 🍽️🏃",
+            "Quem só trabalha até esgotar os tokens da IA? 🤖🔋",
+            "Quem roda chmod 777 em tudo quando dá 'Permission Denied'? 🔑🔓",
+            "Quem bota print('chegou aqui 1') e print('chegou aqui 2') em produção? 🖨️",
+            "Quem dá restart no banco e reza um Pai Nosso pra voltar? 🙏",
+            "Quem fecha a issue aberta pelo QA dizendo 'não é bug, é feature'? 🐛✨",
+            "Quem jura de pé junto que 'na minha máquina funciona perfeitamente'? 💻🤷‍♂️",
+            "Quem copia código de 2011 do StackOverflow sem ler o que faz? 📜",
+            "Quem faz deploy na madrugada de sábado depois de 3 latinhas? 🍻🚀"
+        ];
+
+        // Pré-carregamento das imagens no Canvas
+        const loadedImages = {};
+        let imagesReady = 0;
+        membros.forEach(m => {
+            const img = new Image();
+            img.src = m.imgUrl;
+            img.onload = () => {
+                imagesReady++;
+                desenharRoleta();
+            };
+            loadedImages[m.nome] = img;
+        });
+
+        // Configurações do Canvas da Roleta
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+        const numSlices = membros.length;
+        const sliceAngle = (2 * Math.PI) / numSlices;
+        let currentRotation = 0;
+        let isSpinning = false;
+
+        // ÁUDIO CÔMICO VIA WEB AUDIO API (100% nativo)
+        const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+        function getAudioContext() {
+            if (!audioCtx) audioCtx = new AudioCtxClass();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        // Tique-taque mecânico de catraca / flapper da roleta
+        function playTickSound() {
+            try {
+                const ctxA = getAudioContext();
+                const osc = ctxA.createOscillator();
+                const gain = ctxA.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(580 + Math.random() * 200, ctxA.currentTime);
+                gain.gain.setValueAtTime(0.14, ctxA.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctxA.currentTime + 0.03);
+                osc.connect(gain);
+                gain.connect(ctxA.destination);
+                osc.start();
+                osc.stop(ctxA.currentTime + 0.03);
+            } catch (e) {}
+        }
+
+        // Som tosco de sirene de polícia / camburão (WEE-WOO-WEE-WOO)
+        function playSirenSound() {
+            try {
+                const ctxA = getAudioContext();
+                const now = ctxA.currentTime;
+                
+                const osc = ctxA.createOscillator();
+                const gain = ctxA.createGain();
+                osc.type = 'sawtooth';
+                
+                // Alterna entre tom agudo e grave estilo viatura policial brasileira
+                const cycles = 6;
+                const cycleDuration = 0.32;
+                for (let i = 0; i < cycles; i++) {
+                    const t = now + (i * cycleDuration);
+                    osc.frequency.setValueAtTime(450, t);
+                    osc.frequency.linearRampToValueAtTime(980, t + cycleDuration * 0.5);
+                    osc.frequency.linearRampToValueAtTime(450, t + cycleDuration);
+                }
+                
+                gain.gain.setValueAtTime(0.22, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + (cycles * cycleDuration));
+                
+                osc.connect(gain);
+                gain.connect(ctxA.destination);
+                
+                osc.start(now);
+                osc.stop(now + (cycles * cycleDuration));
+            } catch (e) {}
+        }
+
+        // Desenhar a Roleta Literal no Canvas com Fotos GIGANTES
+        function desenharRoleta() {
+            const width = canvas.width;
+            const height = canvas.height;
+            const center = width / 2;
+            const radius = center - 12;
+
+            ctx.clearRect(0, 0, width, height);
+
+            ctx.save();
+            ctx.translate(center, center);
+            ctx.rotate(currentRotation);
+
+            for (let i = 0; i < numSlices; i++) {
+                const m = membros[i];
+                const start = i * sliceAngle;
+                const end = start + sliceAngle;
+
+                // Fatia de pizza colorida
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.arc(0, 0, radius, start, end);
+                ctx.closePath();
+                ctx.fillStyle = m.cor;
+                ctx.fill();
+                ctx.lineWidth = 5;
+                ctx.strokeStyle = '#111';
+                ctx.stroke();
+
+                // Pinos metálicos na borda
+                const pegAngle = start;
+                const px = Math.cos(pegAngle) * (radius - 6);
+                const py = Math.sin(pegAngle) * (radius - 6);
+                ctx.beginPath();
+                ctx.arc(px, py, 7, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = '#000';
+                ctx.stroke();
+
+                // Desenha a Foto GIGANTE e o Nome na Fatia
+                ctx.save();
+                const midAngle = start + sliceAngle / 2;
+                ctx.rotate(midAngle);
+
+                // Foto GIGANTE no centro da fatia (diâmetro 104px!)
+                const img = loadedImages[m.nome];
+                if (img && img.complete) {
+                    const imgX = radius * 0.50;
+                    const imgY = 0;
+                    const imgSize = 104;
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(imgX, imgY, imgSize / 2, 0, Math.PI * 2);
+                    ctx.closePath();
+                    ctx.clip();
+                    ctx.drawImage(img, imgX - imgSize / 2, imgY - imgSize / 2, imgSize, imgSize);
+                    ctx.restore();
+
+                    // Borda cartoon grossa da foto
+                    ctx.beginPath();
+                    ctx.arc(imgX, imgY, imgSize / 2, 0, Math.PI * 2);
+                    ctx.lineWidth = 4.5;
+                    ctx.strokeStyle = '#000000';
+                    ctx.stroke();
+
+                    // Anel branco fino interno
+                    ctx.beginPath();
+                    ctx.arc(imgX, imgY, (imgSize / 2) - 3, 0, Math.PI * 2);
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.stroke();
+                }
+
+                // Nome Grande próximo à borda externa
+                ctx.textAlign = 'right';
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '900 24px Impact, sans-serif';
+                ctx.lineWidth = 5;
+                ctx.strokeStyle = '#000000';
+                ctx.strokeText(m.nome.toUpperCase(), radius - 16, 8);
+                ctx.fillText(m.nome.toUpperCase(), radius - 16, 8);
+
+                ctx.restore();
+            }
+
+            ctx.restore();
+        }
+
+        // Animação Física de Giro da Roleta
+        function acionarRoleta() {
+            if (isSpinning) return;
+            isSpinning = true;
+
+            document.getElementById('btnGirarCentro').disabled = true;
+            document.getElementById('veredictoBox').style.display = 'none';
+
+            getAudioContext();
+
+            // Sorteia quem vai ser o condenado
+            const condenadoIndex = Math.floor(Math.random() * numSlices);
+            
+            // O ponteiro fica no topo (270 graus ou 3*PI/2)
+            const pointerAngle = (3 * Math.PI) / 2;
+            
+            // Ângulo central da fatia do condenado
+            const sliceCenter = condenadoIndex * sliceAngle + (sliceAngle / 2);
+            const margem = (Math.random() - 0.5) * (sliceAngle * 0.45);
+            const targetSliceAngle = sliceCenter + margem;
+
+            // 6 a 8 voltas completas para gerar suspense
+            const voltasCompletas = (6 + Math.floor(Math.random() * 3)) * (2 * Math.PI);
+            
+            const targetRotation = currentRotation + voltasCompletas + (pointerAngle - (currentRotation % (2 * Math.PI)) - targetSliceAngle);
+
+            const startRotation = currentRotation;
+            const distance = targetRotation - startRotation;
+            const duration = 4600;
+            const startTime = performance.now();
+            let lastPegPassed = -1;
+
+            const ponteiro = document.getElementById('ponteiroFisico');
+
+            function animar(tempoAtual) {
+                const elapsed = tempoAtual - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Desaceleração cúbica suave
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                currentRotation = startRotation + distance * easeOut;
+
+                // Tique-taque da catraca
+                const anguloRelativo = (currentRotation) % (2 * Math.PI);
+                const pegIndex = Math.floor((anguloRelativo / sliceAngle));
+                if (pegIndex !== lastPegPassed) {
+                    lastPegPassed = pegIndex;
+                    playTickSound();
+                    
+                    ponteiro.classList.add('flicking');
+                    setTimeout(() => ponteiro.classList.remove('flicking'), 40);
+                }
+
+                desenharRoleta();
+
+                if (progress < 1) {
+                    requestAnimationFrame(animar);
+                } else {
+                    finalizarGiro(condenadoIndex);
+                }
+            }
+
+            requestAnimationFrame(animar);
+        }
+
+        // Finaliza o Giro e Mostra o Veredicto
+        async function finalizarGiro(vencedorIndex) {
+            isSpinning = false;
+            document.getElementById('btnGirarCentro').disabled = false;
+
+            const condenado = membros[vencedorIndex];
+            const crimeAtual = document.getElementById('boTexto').innerText.replace(/^"|"$/g, '');
+
+            // Toca apenas o som tosco de sirene policial
+            playSirenSound();
+
+            // Preenche modal de veredicto
+            document.getElementById('tituloCondenado').innerText = `🚨 ${condenado.nome.toUpperCase()} FOI CONDENADO!`;
+            document.getElementById('nomeCondenado').innerText = condenado.nome;
+            document.getElementById('fotoCondenado').src = condenado.imgUrl;
+            document.getElementById('delitoCondenado').innerText = `Flagrado no delito: "${crimeAtual}"`;
+            document.getElementById('veredictoBox').style.display = 'block';
+
+            // Salva no PostgreSQL
+            try {
+                await fetch('/api/registrar_crime', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ integrante: condenado.nome, crime: crimeAtual })
+                });
+                await carregarFichaPolicial();
+            } catch (err) {
+                console.error("Erro ao registrar crime:", err);
+            }
+        }
+
+        function fecharVeredicto() {
+            document.getElementById('veredictoBox').style.display = 'none';
+        }
+
+        function sortearNovoBo() {
+            const r = Math.floor(Math.random() * crimes.length);
+            document.getElementById('boTexto').innerText = `"${crimes[r]}"`;
+        }
+
+        // Carrega Ficha Policial (Leaderboard) com Fotos nos Suspeitos
+        async function carregarFichaPolicial() {
+            const btn = document.getElementById('btnAtualizarFicha');
+            if (btn) {
+                btn.innerHTML = '⏳ Carregando...';
+                btn.disabled = true;
+            }
+
+            try {
+                const res = await fetch('/api/placar_crimes');
+                const dados = await res.json();
+                const tbody = document.getElementById('fichaTbody');
+                tbody.innerHTML = '';
+
+                if (!dados || dados.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-3 text-muted fw-bold">Nenhum suspeito fichado ainda no banco de dados. Gire a roleta!</td></tr>';
+                    return;
+                }
+
+                dados.forEach((item, i) => {
+                    const rankEmoji = i === 0 ? '🚨 INIMIGO Nº 1' : i === 1 ? '🥈 REINCIDENTE' : i === 2 ? '🥉 SUSPEITO' : `#${i + 1}`;
+                    const membroInfo = membros.find(m => m.nome.toLowerCase() === item.integrante.toLowerCase());
+                    const fotoUrl = membroInfo ? membroInfo.imgUrl : '/image/alan.jpg';
+
+                    const row = `
+                        <tr>
+                            <td class="text-center fw-bold align-middle">${rankEmoji}</td>
+                            <td class="fw-bold fs-5 text-dark align-middle">
+                                <div class="d-flex align-items-center">
+                                    <img src="${fotoUrl}" alt="${item.integrante}" style="width: 48px; height: 48px; border-radius: 50%; border: 3px solid #000; object-fit: cover; margin-right: 12px; box-shadow: 2px 2px 0 #000;">
+                                    <span>${item.integrante}</span>
+                                </div>
+                            </td>
+                            <td class="text-center align-middle"><span class="badge-delitos">${item.total} B.O.s</span></td>
+                            <td class="text-secondary align-middle">${item.ultimo_crime}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } catch (err) {
+                console.error("Erro ao buscar ficha policial:", err);
+            } finally {
+                if (btn) {
+                    btn.innerHTML = '✅ Atualizado!';
+                    setTimeout(() => {
+                        btn.innerHTML = '🔄 Atualizar Antecedentes';
+                        btn.disabled = false;
+                    }, 800);
+                }
+            }
+        }
+
+        async function zerarFichaPolicial() {
+            if (!confirm("⚠️ Tem certeza que deseja zerar a ficha de todo mundo no PostgreSQL?")) {
+                return;
+            }
+            try {
+                await fetch('/api/zerar_crimes', { method: 'POST' });
+                await carregarFichaPolicial();
+            } catch (err) {
+                console.error("Erro ao zerar ficha policial:", err);
+            }
+        }
+
+        // Inicializa
+        desenharRoleta();
+        carregarFichaPolicial();
+    </script>
+</body>
+</html>
