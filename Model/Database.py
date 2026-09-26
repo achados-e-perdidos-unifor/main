@@ -125,4 +125,3 @@ def obter_placar_crimes():
 def zerar_crimes_bd():
     query = "DELETE FROM tribunal_devops"
     return executar_consulta(query)
-
