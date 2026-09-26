@@ -12,9 +12,11 @@ inicializar_banco()
 criar_rotasP(app)
 criar_rotasA(app)
 
+
 @app.route('/')
 def index():
     return app.send_static_file('index.html')
+
 
 @app.route('/health')
 def health():

@@ -2,6 +2,7 @@
 from flask import jsonify, request
 from Model.Database import executar_consulta, selecionar_dados
 
+
 def criar_rotasA(app):
     @app.route('/criar_tabela_ObjetoA', methods=['POST'])
     def criar_tabelaA():
@@ -108,8 +109,8 @@ def criar_rotasA(app):
     @app.route('/listar_objetosA', methods=['GET'])
     def listar_objetosA():
         query = """
-            SELECT id_objetoA, nome_objeto_achado, cor_achado, nome_pessoa, cpf, contato 
-            FROM objetos_achados 
+            SELECT id_objetoA, nome_objeto_achado, cor_achado, nome_pessoa, cpf, contato
+            FROM objetos_achados
             ORDER BY id_objetoA ASC
         """
         resultado = selecionar_dados(query)

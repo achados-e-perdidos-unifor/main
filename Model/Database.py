@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def conectar_BD():
     try:
         conn = pg.connect(
@@ -18,6 +19,7 @@ def conectar_BD():
     except (Exception, pg.Error) as error:
         print("Erro ao conectar ao banco de dados: ", error)
         return None
+
 
 def executar_consulta(query, params=None):
     conn = conectar_BD()
