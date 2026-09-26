@@ -85,3 +85,47 @@ jobs:
       - name: Executar testes mocados
         run: |
           python -m pytest tests/ -v --tb=short
+
+      - name: Construir imagem Docker
+        run: |
+          docker build -t app:${{ github.sha }} .
+
+      - name: Salvar imagem Docker
+        run: |
+          docker save app:${{ github.sha }} -o image.tar
+
+      - name: Upload da imagem Docker
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: image.tar
+          retention-days: 7
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download da imagem Docker
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+
+      - name: Carregar imagem Docker
+        run: docker load -i image.tar
+
+      - name: Login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Tag e push da imagem
+        run: |
+          docker tag app:${{ github.sha }} murilo751/achados-e-perdidos:${{ github.sha }}
+          docker tag app:${{ github.sha }} murilo751/achados-e-perdidos:latest
+          docker push murilo751/achados-e-perdidos:${{ github.sha }}
+          docker push murilo751/achados-e-perdidos:latest
