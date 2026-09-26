@@ -4,8 +4,6 @@ These tests run against a live Flask application + PostgreSQL database
 (via docker-compose) and validate end-to-end functionality.
 """
 
-from datetime import date, timedelta
-
 
 class TestHealth:
     """Health check endpoint tests."""

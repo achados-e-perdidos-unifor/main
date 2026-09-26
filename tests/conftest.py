@@ -1,13 +1,10 @@
 """Pytest configuration and fixtures for integration tests."""
 
 import os
-import sys
 from time import sleep
 
 import pytest
 import requests
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Model.Database import conectar_BD
 
