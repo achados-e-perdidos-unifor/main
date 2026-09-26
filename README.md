@@ -98,6 +98,17 @@ curl -X POST http://localhost:5000/criar_tabela_ObjetoP
 curl -X POST http://localhost:5000/criar_tabela_ObjetoA
 ```
 
+### Executar a imagem publicada no Docker Hub
+
+Para producao, copie o exemplo de ambiente, configure uma senha forte para o banco e suba a imagem publicada pelo CI:
+
+```bash
+cp .env.prod.example .env.prod
+docker compose --env-file .env.prod -f docker-compose.prod.yml up -d
+```
+
+Defina `IMAGE_TAG` em `.env.prod` com o SHA completo do commit ou uma tag de release publicada pelo CI, como `v1.2.3`; o Compose falha se a tag estiver vazia. `APP_PORT=5001` permite executar a producao ao lado do Compose local, que usa a porta 5000. Se executar apenas a producao, pode usar `APP_PORT=5000`. O banco fica em um volume persistente e nao tem porta publicada no host.
+
 ## Endpoints
 
 **Objetos perdidos**
