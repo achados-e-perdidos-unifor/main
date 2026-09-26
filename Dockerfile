@@ -6,6 +6,10 @@
 # 1. Imagem base oficial, fixada e leve (versão slim)
 FROM python:3.11-slim
 
+# Metadados OCI exibidos por registries como o Docker Hub
+LABEL org.opencontainers.image.title="Achados e Perdidos" \
+      org.opencontainers.image.description="Aplicação Flask para cadastro de objetos perdidos e devolvidos."
+
 # 2. Variáveis de ambiente para o Python em containers
 # PYTHONDONTWRITEBYTECODE: impede a criação de arquivos .pyc no container
 # PYTHONUNBUFFERED: envia prints/logs direto para o terminal em tempo real

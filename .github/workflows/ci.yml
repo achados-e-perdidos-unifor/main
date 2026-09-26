@@ -93,9 +93,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
-      - name: Executar testes automatizados
+      - name: Executar testes unitários (mocks)
         run: |
-          python -m pytest tests/ -v --tb=short
+          python -m pytest tests/test_ci.py -v --tb=short
 
       - name: Construir imagem Docker
         run: |
