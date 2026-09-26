@@ -158,3 +158,12 @@ jobs:
             docker tag app:${{ github.sha }} murilo751/achados-e-perdidos:${VERSION}
             docker push murilo751/achados-e-perdidos:${VERSION}
           fi
+
+      - name: Trigger Deploy no Render
+        run: |
+          if [ -n "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
+            curl -s -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+            echo "✅ Deploy disparado com sucesso no Render!"
+          else
+            echo "⚠️ RENDER_DEPLOY_HOOK_URL não configurado. Pulei o trigger automático."
+          fi
