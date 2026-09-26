@@ -3,40 +3,76 @@
 # Utiliza a imagem já construída e publicada no Docker Hub
 # ==========================================
 
-name: achados-e-perdidos-prod
+# ==========================================
+# Docker Compose - Modo Produção
+# Utiliza imagem publicada do Docker Hub
+# Não faz build local
+# ==========================================
+
+version: '3.8'
 
 services:
   app:
-    image: "murilo751/achados-e-perdidos:${IMAGE_TAG:?Defina_IMAGE_TAG_no_.env.prod_com_SHA_ou_tag_de_release}"
-    pull_policy: always
+    image: ${DOCKER_USERNAME:-murilo751}/achados-e-perdidos:${IMAGE_TAG:-latest}
+    container_name: achados-app
     restart: unless-stopped
-    init: true
     ports:
-      - "${APP_PORT:-5001}:5000"
+      - "${APP_PORT:-5000}:5000"
     environment:
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
+      # Banco de dados
+      DB_NAME: ${DB_NAME:-achados_perdidos}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
       DB_HOST: db
-      DB_PORT: "5432"
+      DB_PORT: 5432
+      # Flask
+      FLASK_ENV: production
+      NODE_ENV: production
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - app-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   db:
     image: postgres:16-alpine
+    container_name: achados-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-achados_perdidos}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
-      interval: 5s
-      timeout: 3s
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
       retries: 5
+      start_period: 10s
+    networks:
+      - app-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   db_data:
+    driver: local
