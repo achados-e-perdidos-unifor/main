@@ -2,10 +2,10 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, feature/*, develop ]
-    tags: [ 'v*.*.*' ]
+    branches: [main, feature/*, develop]
+    tags: ["v*.*.*"]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
   workflow_dispatch:
 
 jobs:
@@ -19,7 +19,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Instalar pip e dependências
         run: |
@@ -53,7 +53,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Instalar dependências de linting
         run: |
@@ -75,7 +75,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Instalar dependências
         run: |
@@ -90,7 +90,7 @@ jobs:
         run: |
           docker build -t app:${{ github.sha }} .
 
-      - name: Validar container com Docker Compose (Smoke Test em /health)
+      - name: Subir ambiente com Docker Compose
         run: |
           docker compose up -d
           sleep 8
@@ -121,8 +121,7 @@ jobs:
         with:
           name: docker-image
           path: image.tar
-          retention-days: 7 
-
+          retention-days: 7
 
   deploy:
     runs-on: ubuntu-latest
