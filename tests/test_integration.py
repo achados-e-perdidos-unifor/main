@@ -5,6 +5,12 @@ These tests run against a live Flask application + PostgreSQL database
 """
 
 import pytest
+from datetime import date, timedelta
+
+
+def get_test_date():
+    """Get a valid date (today or in the past) for testing."""
+    return (date.today() - timedelta(days=1)).strftime("%d/%m/%Y")
 
 
 class TestHealth:
@@ -25,7 +31,7 @@ class TestObjetosPerdidos:
         payload = {
             "nome_objeto": "Carteira marrom",
             "cor": "Marrom",
-            "data_perdido": "2026-09-20"
+            "data_perdido": "20/09/2026"
         }
 
         response = http_client.post("/inserir_objeto", json=payload)
@@ -36,7 +42,7 @@ class TestObjetosPerdidos:
         payload = {
             "nome_objeto": "Chaves",
             "cor": "Prata",
-            "data_perdido": "2026-09-19"
+            "data_perdido": "19/09/2026"
         }
         http_client.post("/inserir_objeto", json=payload)
 
@@ -50,7 +56,7 @@ class TestObjetosPerdidos:
         payload = {
             "nome_objeto": "Relógio",
             "cor": "Dourado",
-            "data_perdido": "2026-09-18"
+            "data_perdido": "18/09/2026"
         }
         http_client.post("/inserir_objeto", json=payload)
 
@@ -68,7 +74,7 @@ class TestObjetosPerdidos:
         insert_payload = {
             "nome_objeto": "Mochila preta",
             "cor": "Preta",
-            "data_perdido": "2026-09-17"
+            "data_perdido": "17/09/2026"
         }
         http_client.post("/inserir_objeto", json=insert_payload)
 
@@ -79,7 +85,7 @@ class TestObjetosPerdidos:
             "id_objeto": obj_id,
             "nome_objeto": "Mochila preta (grande)",
             "cor": "Preta",
-            "data_perdido": "2026-09-17"
+            "data_perdido": "17/09/2026"
         }
         response = http_client.put("/atualizar_objeto", json=update_payload)
         assert response.status_code == 200
@@ -92,7 +98,7 @@ class TestObjetosPerdidos:
         insert_payload = {
             "nome_objeto": "Óculos de sol",
             "cor": "Preto",
-            "data_perdido": "2026-09-16"
+            "data_perdido": "16/09/2026"
         }
         http_client.post("/inserir_objeto", json=insert_payload)
 
@@ -114,7 +120,7 @@ class TestObjetosAchados:
         lost_payload = {
             "nome_objeto": "Guarda-chuva",
             "cor": "Vermelho",
-            "data_perdido": "2026-09-15"
+            "data_perdido": "15/09/2026"
         }
         http_client.post("/inserir_objeto", json=lost_payload)
 
@@ -137,7 +143,7 @@ class TestObjetosAchados:
         lost_payload = {
             "nome_objeto": "Livro",
             "cor": "Azul",
-            "data_perdido": "2026-09-14"
+            "data_perdido": "14/09/2026"
         }
         http_client.post("/inserir_objeto", json=lost_payload)
 
@@ -164,7 +170,7 @@ class TestObjetosAchados:
         lost_payload = {
             "nome_objeto": "Celular",
             "cor": "Branco",
-            "data_perdido": "2026-09-13"
+            "data_perdido": "13/09/2026"
         }
         http_client.post("/inserir_objeto", json=lost_payload)
 
