@@ -103,8 +103,8 @@ def criar_rotasA(app):
                 return jsonify({'mensagem': 'Objeto deletado com sucesso'}), 200
             else:
                 return jsonify({'mensagem': 'Objeto não encontrado'}), 404
-        except Exception as e:
-            return jsonify({'mensagem': 'Erro ao tentar deletar o objeto', 'erro': str(e)}), 500
+        except Exception:
+            return jsonify({'mensagem': 'Erro ao tentar deletar o objeto'}), 500
 
     @app.route('/listar_objetosA', methods=['GET'])
     def listar_objetosA():
