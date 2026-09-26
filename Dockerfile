@@ -25,7 +25,10 @@ RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 
 # 5. Cache de camadas: copia SÓ as dependências e instala primeiro
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Usa ferramentas corrigidas durante a instalação e as remove da imagem final.
+RUN python -m pip install --no-cache-dir --upgrade pip==26.2.1 setuptools==84.0.0 wheel==0.47.0 \
+    && python -m pip install --no-cache-dir -r requirements.txt \
+    && python -m pip uninstall -y setuptools wheel pip
 
 # 6. Copia o restante do código já atribuindo a posse ao usuário não-root
 COPY --chown=appuser:appgroup . .
