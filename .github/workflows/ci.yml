@@ -42,7 +42,7 @@ jobs:
           retention-days: 30
 
   lint:
-    runs-on: ubuntu-latest
+    runs-on: archlinux
     needs: build
 
     steps:
@@ -65,7 +65,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: archlinux
     needs: lint
 
     steps:
@@ -99,11 +99,11 @@ jobs:
         with:
           name: docker-image
           path: image.tar
-          retention-days: 7
+          retention-days: 7 
 
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: archlinux
     needs: test
 
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
