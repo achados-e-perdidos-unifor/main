@@ -8,6 +8,10 @@ on:
     branches: [ main, develop ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: read
+
 defaults:
   run:
     shell: powershell
