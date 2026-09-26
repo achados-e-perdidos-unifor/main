@@ -2,10 +2,10 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, feature/*, develop ]
-    tags: [ 'v*.*.*' ]
+    branches: [main, feature/*, develop]
+    tags: ["v*.*.*"]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
   workflow_dispatch:
 
 jobs:
@@ -19,7 +19,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Instalar pip e dependências
         run: |
@@ -53,7 +53,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Instalar dependências de linting
         run: |
@@ -75,26 +75,41 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Instalar dependências
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
-      - name: Executar testes automatizados
+      - name: Executar testes unitários (mocks)
         run: |
-          python -m pytest tests/ -v --tb=short
+          python -m pytest tests/test_ci.py -v --tb=short
 
       - name: Construir imagem Docker
         run: |
           docker build -t app:${{ github.sha }} .
 
-      - name: Validar container com Docker Compose (Smoke Test em /health)
+      - name: Subir ambiente com Docker Compose
         run: |
           docker compose up -d
           sleep 8
           curl -f http://localhost:5000/health || (docker compose logs && exit 1)
+
+      - name: Executar testes de integração (contra banco real)
+        env:
+          APP_URL: http://localhost:5000
+          DB_NAME: achados_perdidos
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          DB_HOST: localhost
+          DB_PORT: 5432
+        run: |
+          python -m pytest tests/test_integration.py -v --tb=short
+
+      - name: Parar Docker Compose
+        if: always()
+        run: |
           docker compose down -v
 
       - name: Salvar imagem Docker
@@ -106,8 +121,7 @@ jobs:
         with:
           name: docker-image
           path: image.tar
-          retention-days: 7 
-
+          retention-days: 7
 
   deploy:
     runs-on: ubuntu-latest
