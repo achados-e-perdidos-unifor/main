@@ -91,7 +91,7 @@ jobs:
 
       - name: Construir imagem Docker
         run: |
-          docker build -t app:${{ github.sha }} .
+          docker build --pull -t app:${{ github.sha }} .
 
       - name: Subir ambiente com Docker Compose
         run: |
