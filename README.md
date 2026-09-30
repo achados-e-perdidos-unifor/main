@@ -49,6 +49,30 @@ Ao registrar uma devolução, a API consulta o objeto perdido pelo `id_objeto` e
 
 Python 3.11 é a versão utilizada no Dockerfile e no workflow. As dependências estão em [requirements.txt](requirements.txt) e [requirements-dev.txt](requirements-dev.txt).
 
+## Arquitetura
+
+```text
+       +-------------------------------------------------------------+
+       |                        Navegador Web                        |
+       +-------------------------------------------------------------+
+                                      |  HTTP (Porta 5000)
+                                      v
+       +-------------------------------------------------------------+
+       |             Container App (Flask / Python 3.11)             |
+       |             - Rotas CRUD (/inserir, /listar, etc.)          |
+       |             - Health Check (/health)                        |
+       |             - Tribunal DevOps (/jogo)                       |
+       +-------------------------------------------------------------+
+                                      |  TCP (Porta 5432)
+                                      v
+       +-------------------------------------------------------------+
+       |               Container DB (PostgreSQL 16)                  |
+       |             - Tabelas: objetos_perdidos,                    |
+       |                        objetos_achados, tribunal_devops     |
+       |             - Persistência: Volume 'db_data'                |
+       +-------------------------------------------------------------+
+```
+
 ## Estrutura do projeto
 
 ```text
@@ -307,14 +331,12 @@ O workflow [ci.yml](.github/workflows/ci.yml) utiliza Ubuntu hospedado pelo GitH
 
 As etapas dependem da conclusão bem-sucedida da anterior:
 
-1. **Build:** instala dependências, verifica a importação da aplicação e gera um ZIP.
-2. **Lint:** executa flake8 com a configuração do projeto.
-3. **Test:** executa pytest, constrói a imagem Docker e prevê um smoke test de `/health` com Compose, seguido do armazenamento da imagem como artefato.
-4. **Deploy:** publica a imagem no Docker Hub após push em `main` ou execução elegível em tag `v*`.
+1. **Lint:** executa flake8 com a configuração estrita do projeto (sem tolerância a mascaramento de falhas) e testes unitários (`test_ci.py`).
+2. **Build:** constrói a imagem Docker com a tag do commit (`docker build`) e a exporta como artefato versionado (`image.tar`).
+3. **Test:** baixa a imagem construída, sobe o ambiente com Docker Compose, valida a prontidão com smoke test em `/health`, executa os testes de integração (`test_integration.py`) contra o banco ativo e encerra o ambiente.
+4. **Deploy:** baixa a imagem já validada no CI (sem reconstrução), autentica no Docker Hub e publica as tags do SHA do commit e `latest` (e versão se disparado por tag `v*.*.*`), com disparo opcional de deploy hook.
 
-A publicação usa os secrets `DOCKERHUB_USERNAME` e `DOCKERHUB_TOKEN`. As imagens recebem tags com o SHA do commit e `latest`; em releases por tag, recebem também a versão correspondente. Neste trabalho, o job `deploy` demonstra a entrega por publicação da imagem, que pode ser executada para avaliação com `docker-compose.prod.yml`.
-
-**Limitação atual:** o comando `pytest tests/` inclui os testes de integração, porém aparece antes de `docker compose up`. Em um ambiente limpo, esses testes dependem de aplicação e banco que ainda não foram iniciados. Essa ordem precisa ser ajustada no CI; a existência do workflow não significa que a suíte esteja passando.
+A publicação usa os secrets `DOCKERHUB_USERNAME` e `DOCKERHUB_TOKEN`. Neste trabalho, o job `deploy` demonstra a entrega contínua por publicação da imagem no registry, que pode ser executada para avaliação com `docker-compose.prod.yml`.
 
 ## Escopo acadêmico
 
